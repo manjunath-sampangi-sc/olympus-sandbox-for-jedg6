@@ -1,0 +1,333 @@
+version: 2
+
+sources:
+  - name: hubspot
+    description: "HubSpot CRM data containing customer relationship management information"
+    database: OLYMPUS_ANALYTICS
+    schema: BRONZE
+    tables:
+      - name: hubspot_contacts
+        description: "Contact data from HubSpot CRM"
+        columns:
+          - name: contact_id
+            description: "Unique identifier for the contact"
+            tests:
+              - not_null
+              - unique
+          - name: email
+            description: "Contact email address"
+            tests:
+              - not_null
+          - name: first_name
+            description: "Contact first name"
+          - name: last_name
+            description: "Contact last name"
+          - name: company_name
+            description: "Associated company name"
+          - name: job_title
+            description: "Contact job title"
+          - name: lifecycle_stage
+            description: "Contact lifecycle stage"
+          - name: lead_source
+            description: "Source of the lead"
+          - name: last_activity_date
+            description: "Date of last activity"
+          - name: created_at
+            description: "Record creation timestamp"
+          - name: updated_at
+            description: "Record last update timestamp"
+
+      - name: hubspot_deals
+        description: "Deal data from HubSpot CRM"
+        columns:
+          - name: deal_id
+            description: "Unique identifier for the deal"
+            tests:
+              - not_null
+              - unique
+          - name: deal_name
+            description: "Deal name"
+            tests:
+              - not_null
+          - name: deal_stage
+            description: "Current deal stage"
+          - name: deal_amount
+            description: "Deal amount in USD"
+          - name: close_date
+            description: "Expected or actual close date"
+          - name: probability
+            description: "Deal probability percentage"
+          - name: deal_type
+            description: "Type of deal"
+          - name: lead_source
+            description: "Source of the lead"
+          - name: owner_id
+            description: "Deal owner identifier"
+          - name: company_id
+            description: "Associated company identifier"
+          - name: contact_id
+            description: "Associated contact identifier"
+          - name: created_at
+            description: "Record creation timestamp"
+          - name: updated_at
+            description: "Record last update timestamp"
+
+  - name: disco
+    description: "Disco LMS data containing learning management system information from live API"
+    database: OLYMPUS_ANALYTICS
+    schema: BRONZE
+    tables:
+      - name: disco_communities
+        description: "Communities (Groups) data from Disco LMS API"
+        columns:
+          - name: community_id
+            description: "Unique identifier for the community"
+            tests:
+              - not_null
+              - unique
+          - name: community_name
+            description: "Community name"
+          - name: description
+            description: "Community description"
+          - name: status
+            description: "Community status"
+          - name: member_count
+            description: "Number of members in community"
+          - name: created_at
+            description: "Community creation timestamp"
+          - name: _loaded_at
+            description: "Data load timestamp"
+
+      - name: disco_members
+        description: "Members data from Disco LMS API"
+        columns:
+          - name: member_id
+            description: "Unique identifier for the member"
+            tests:
+              - not_null
+              - unique
+          - name: email
+            description: "Member email address"
+            tests:
+              - not_null
+          - name: first_name
+            description: "Member first name"
+          - name: last_name
+            description: "Member last name"
+          - name: username
+            description: "Member username"
+          - name: community_id
+            description: "Associated community identifier"
+          - name: role
+            description: "Member role in the system"
+          - name: status
+            description: "Member status"
+          - name: joined_at
+            description: "Member join timestamp"
+          - name: last_active_at
+            description: "Last activity timestamp"
+          - name: _loaded_at
+            description: "Data load timestamp"
+
+      - name: disco_products
+        description: "Products/Courses data from Disco LMS API"
+        columns:
+          - name: product_id
+            description: "Unique identifier for the product/course"
+            tests:
+              - not_null
+              - unique
+          - name: product_name
+            description: "Product/course name"
+            tests:
+              - not_null
+          - name: product_type
+            description: "Type of product (course, etc.)"
+          - name: description
+            description: "Product description"
+          - name: price
+            description: "Product price"
+          - name: currency
+            description: "Price currency"
+          - name: status
+            description: "Product status"
+          - name: created_at
+            description: "Product creation timestamp"
+          - name: _loaded_at
+            description: "Data load timestamp"
+
+      - name: disco_enrollments
+        description: "Enrollments data from Disco LMS API"
+        columns:
+          - name: enrollment_id
+            description: "Unique identifier for the enrollment"
+            tests:
+              - not_null
+              - unique
+          - name: member_id
+            description: "Member identifier"
+            tests:
+              - not_null
+          - name: product_id
+            description: "Product/course identifier"
+            tests:
+              - not_null
+          - name: community_id
+            description: "Community identifier"
+          - name: enrolled_at
+            description: "Enrollment timestamp"
+          - name: unenrolled_at
+            description: "Unenrollment timestamp"
+          - name: status
+            description: "Enrollment status"
+          - name: progress_percentage
+            description: "Completion progress percentage"
+          - name: completion_date
+            description: "Course completion date"
+          - name: _loaded_at
+            description: "Data load timestamp"
+
+      - name: disco_users
+        description: "Legacy user data from Disco LMS (for backward compatibility)"
+        columns:
+          - name: user_id
+            description: "Unique identifier for the user"
+            tests:
+              - not_null
+              - unique
+          - name: email
+            description: "User email address"
+            tests:
+              - not_null
+          - name: first_name
+            description: "User first name"
+          - name: last_name
+            description: "User last name"
+          - name: username
+            description: "User username"
+          - name: role
+            description: "User role in the system"
+          - name: department
+            description: "User department"
+          - name: job_title
+            description: "User job title"
+          - name: manager_id
+            description: "User's manager identifier"
+          - name: hire_date
+            description: "User hire date"
+          - name: status
+            description: "User status (active/inactive)"
+          - name: last_login_date
+            description: "Date of last login"
+          - name: total_courses_completed
+            description: "Total number of courses completed"
+          - name: total_learning_hours
+            description: "Total learning hours accumulated"
+          - name: skill_level
+            description: "User skill level"
+          - name: location
+            description: "User location"
+          - name: time_zone
+            description: "User time zone"
+          - name: language_preference
+            description: "User language preference"
+          - name: created_at
+            description: "Record creation timestamp"
+          - name: updated_at
+            description: "Record last update timestamp"
+
+      - name: disco_courses
+        description: "Course data from Disco LMS"
+        columns:
+          - name: course_id
+            description: "Unique identifier for the course"
+            tests:
+              - not_null
+              - unique
+          - name: course_name
+            description: "Course name"
+            tests:
+              - not_null
+          - name: course_description
+            description: "Course description"
+          - name: category
+            description: "Course category"
+          - name: subcategory
+            description: "Course subcategory"
+          - name: difficulty_level
+            description: "Course difficulty level"
+          - name: duration_hours
+            description: "Course duration in hours"
+          - name: instructor_id
+            description: "Course instructor identifier"
+          - name: course_format
+            description: "Course format (online, in-person, etc.)"
+          - name: language
+            description: "Course language"
+          - name: prerequisites
+            description: "Course prerequisites"
+          - name: learning_objectives
+            description: "Course learning objectives"
+          - name: tags
+            description: "Course tags"
+          - name: status
+            description: "Course status (active/inactive)"
+          - name: created_date
+            description: "Course creation date"
+          - name: last_updated_date
+            description: "Course last update date"
+          - name: enrollment_count
+            description: "Number of enrollments"
+          - name: completion_rate
+            description: "Course completion rate percentage"
+          - name: average_rating
+            description: "Average course rating"
+          - name: created_at
+            description: "Record creation timestamp"
+          - name: updated_at
+            description: "Record last update timestamp"
+
+      - name: disco_enrollments
+        description: "Enrollment data from Disco LMS"
+        columns:
+          - name: enrollment_id
+            description: "Unique identifier for the enrollment"
+            tests:
+              - not_null
+              - unique
+          - name: user_id
+            description: "User identifier"
+            tests:
+              - not_null
+          - name: course_id
+            description: "Course identifier"
+            tests:
+              - not_null
+          - name: enrollment_date
+            description: "Date of enrollment"
+            tests:
+              - not_null
+          - name: completion_date
+            description: "Date of completion (if completed)"
+          - name: progress_percentage
+            description: "Course progress percentage"
+          - name: status
+            description: "Enrollment status"
+          - name: last_accessed_date
+            description: "Date of last access"
+          - name: time_spent_minutes
+            description: "Total time spent in minutes"
+          - name: grade
+            description: "Final grade (if applicable)"
+          - name: certificate_issued
+            description: "Whether certificate was issued"
+          - name: enrollment_source
+            description: "Source of enrollment"
+          - name: instructor_id
+            description: "Instructor identifier"
+          - name: cohort_id
+            description: "Cohort identifier"
+          - name: created_at
+            description: "Record creation timestamp"
+          - name: updated_at
+            description: "Record last update timestamp"

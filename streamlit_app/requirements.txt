@@ -1,0 +1,50 @@
+# Core Streamlit and web framework
+streamlit==1.29.0
+streamlit-authenticator==0.2.3
+
+# Data manipulation and analysis
+pandas==2.1.4
+numpy==1.24.3
+
+# Data visualization
+plotly==5.17.0
+altair==5.2.0
+matplotlib==3.8.2
+seaborn==0.13.0
+
+# Snowflake connectivity
+snowflake-connector-python==3.6.0
+snowflake-sqlalchemy==1.5.1
+
+# Database and API connections
+sqlalchemy==2.0.25
+requests==2.31.0
+
+# Environment and configuration
+python-dotenv==1.0.0
+toml==0.10.2
+
+# Date and time handling
+python-dateutil==2.8.2
+
+# Additional utilities
+streamlit-option-menu==0.3.6
+streamlit-aggrid==0.3.4.post3
+streamlit-elements==0.1.0
+
+# For Retool integration
+flask==3.0.0
+flask-cors==4.0.0
+
+# AI and ML (for Snowflake Cortex integration)
+openai==1.6.1
+langchain==0.1.0
+langchain-community==0.0.10
+
+# Security and authentication
+cryptography==41.0.8
+PyJWT==2.8.0
+
+# Development and testing
+pytest==7.4.3
+pytest-streamlit==1.0.0

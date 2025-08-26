@@ -1,0 +1,219 @@
+version: 2
+
+models:
+  # Bronze Layer Models
+  - name: stg_hubspot_contacts
+    description: "Staged HubSpot contacts with basic cleaning and validation"
+    columns:
+      - name: contact_id
+        description: "Unique identifier for the contact"
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "Contact email address (cleaned and lowercased)"
+        tests:
+          - not_null
+
+  - name: stg_hubspot_deals
+    description: "Staged HubSpot deals with basic cleaning and validation"
+    columns:
+      - name: deal_id
+        description: "Unique identifier for the deal"
+        tests:
+          - not_null
+          - unique
+      - name: deal_name
+        description: "Deal name (cleaned)"
+        tests:
+          - not_null
+
+  - name: stg_disco_users
+    description: "Staged Disco LMS users with basic cleaning and validation"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "User email address (cleaned and lowercased)"
+        tests:
+          - not_null
+
+  - name: stg_disco_courses
+    description: "Staged Disco LMS courses with basic cleaning and validation"
+    columns:
+      - name: course_id
+        description: "Unique identifier for the course"
+        tests:
+          - not_null
+          - unique
+      - name: course_name
+        description: "Course name (cleaned)"
+        tests:
+          - not_null
+
+  - name: stg_disco_enrollments
+    description: "Staged Disco LMS enrollments with basic cleaning and validation"
+    columns:
+      - name: enrollment_id
+        description: "Unique identifier for the enrollment"
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        description: "User identifier"
+        tests:
+          - not_null
+      - name: course_id
+        description: "Course identifier"
+        tests:
+          - not_null
+
+  # Silver Layer Models
+  - name: int_users_unified
+    description: "Unified user data combining HubSpot contacts and Disco users"
+    columns:
+      - name: user_key
+        description: "Surrogate key for unified user"
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "User email address"
+        tests:
+          - not_null
+
+  - name: int_deals_enriched
+    description: "Enriched deals data with company and contact information"
+    columns:
+      - name: deal_id
+        description: "Unique identifier for the deal"
+        tests:
+          - not_null
+          - unique
+      - name: deal_status
+        description: "Calculated deal status (Won/Lost/Open)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Won', 'Lost', 'Open']
+
+  - name: int_learning_analytics
+    description: "Enriched learning data with course and user information"
+    columns:
+      - name: enrollment_id
+        description: "Unique identifier for the enrollment"
+        tests:
+          - not_null
+          - unique
+      - name: learning_status
+        description: "Calculated learning status"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Completed', 'Near Completion', 'In Progress', 'Started', 'Not Started']
+
+  # Gold Layer Models
+  - name: dim_users
+    description: "Business-ready user dimension table"
+    columns:
+      - name: user_key
+        description: "Surrogate key for user dimension"
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "User email address"
+        tests:
+          - not_null
+      - name: user_status_category
+        description: "Standardized user status"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Active', 'Inactive', 'Unknown']
+      - name: learning_engagement_tier
+        description: "User learning engagement classification"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['High Engagement', 'Medium Engagement', 'Low Engagement', 'No Engagement']
+
+  - name: dim_courses
+    description: "Business-ready course dimension table"
+    columns:
+      - name: course_id
+        description: "Unique identifier for the course"
+        tests:
+          - not_null
+          - unique
+      - name: course_name
+        description: "Course name"
+        tests:
+          - not_null
+      - name: course_status_category
+        description: "Standardized course status"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Active', 'Inactive', 'Draft', 'Unknown']
+      - name: difficulty_level_numeric
+        description: "Numeric difficulty level for sorting"
+        tests:
+          - not_null
+
+  - name: fact_learning_analytics
+    description: "Business-ready learning analytics fact table"
+    columns:
+      - name: enrollment_id
+        description: "Unique identifier for the enrollment"
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        description: "User identifier"
+        tests:
+          - not_null
+      - name: course_id
+        description: "Course identifier"
+        tests:
+          - not_null
+      - name: is_completed
+        description: "Binary flag for completion status"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+      - name: performance_tier
+        description: "Performance classification based on grade"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Poor', 'Not Graded']
+
+  - name: fact_sales_performance
+    description: "Business-ready sales performance fact table"
+    columns:
+      - name: deal_id
+        description: "Unique identifier for the deal"
+        tests:
+          - not_null
+          - unique
+      - name: deal_amount
+        description: "Deal amount in USD"
+        tests:
+          - not_null
+      - name: is_won
+        description: "Binary flag for won deals"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+      - name: deal_size_tier
+        description: "Deal size classification"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Enterprise (≥$100K)', 'Large ($50K-$100K)', 'Medium ($25K-$50K)', 'Small ($10K-$25K)', 'Micro (<$10K)']
