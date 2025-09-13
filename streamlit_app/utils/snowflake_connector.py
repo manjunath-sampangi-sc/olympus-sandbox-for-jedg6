@@ -162,13 +162,53 @@ class SnowflakeConnector:
             
             target_schema = schema or self.connection_params['schema']
             
+            # Use optimized bulk loading for all tables including DISCO_MEMBERS
+            # Preprocess DataFrame to handle None values in timestamp columns
+            df_processed = df.copy()
+            
+            # Convert None values in object-type columns that should be timestamps
+            # to pd.NaT for proper Snowflake handling
+            timestamp_columns = ['JOINED_AT', 'LAST_ACTIVE_AT', '_LOADED_AT']
+            for col in timestamp_columns:
+                if col in df_processed.columns:
+                    # If column is object type and contains None, convert to datetime with NaT
+                    if df_processed[col].dtype == 'object':
+                        # Replace None with pd.NaT and convert to datetime
+                        df_processed[col] = pd.to_datetime(df_processed[col], errors='coerce')
+                        logger.info(f"Converted {col} from object to datetime, NaT count: {df_processed[col].isna().sum()}")
+            
+            # Handle PROFILE_DATA column for JSON data
+            if 'PROFILE_DATA' in df_processed.columns:
+                # Convert JSON objects to strings for Snowflake VARIANT type
+                import json
+                def convert_to_json_string(value):
+                    if value is None or pd.isna(value):
+                        return None
+                    if isinstance(value, str):
+                        try:
+                            # Validate it's valid JSON
+                            json.loads(value)
+                            return value
+                        except:
+                            return json.dumps(value)
+                    else:
+                        return json.dumps(value)
+                
+                df_processed['PROFILE_DATA'] = df_processed['PROFILE_DATA'].apply(convert_to_json_string)
+                logger.info(f"Processed PROFILE_DATA column for JSON compatibility")
+            
+            logger.info(f"Processed DataFrame dtypes: {df_processed.dtypes.to_dict()}")
+            logger.info(f"Using bulk write_pandas for {len(df_processed)} rows")
+            
+            # Use bulk loading with optimized settings
             success, nchunks, nrows, _ = write_pandas(
                 conn=self.connection,
-                df=df,
+                df=df_processed,
                 table_name=table_name,
                 schema=target_schema,
                 auto_create_table=True,
-                overwrite=(if_exists == 'replace')
+                overwrite=(if_exists == 'replace'),
+                chunk_size=1000  # Process in chunks for better performance
             )
             
             if success:
@@ -180,6 +220,71 @@ class SnowflakeConnector:
                 
         except Exception as e:
             logger.error(f"Error writing DataFrame to Snowflake: {e}")
+            return False
+    
+    def _write_disco_members_manual(self, df: pd.DataFrame, table_name: str, schema: str, if_exists: str) -> bool:
+        """Manual INSERT for DISCO_MEMBERS table to handle nullable timestamps"""
+        try:
+            with self.get_cursor() as cursor:
+                columns = df.columns.tolist()
+                
+                logger.info(f"Using manual INSERT for {table_name} with {len(df)} rows")
+                
+                # First, insert all rows with NULL for PROFILE_DATA, then update separately
+                for row_idx, (_, row) in enumerate(df.iterrows()):
+                    value_parts = []
+                    profile_data_value = None
+                    
+                    for col in columns:
+                        value = row[col]
+                        
+                        if value is None or pd.isna(value):
+                            value_parts.append('NULL')
+                        elif col in ['JOINED_AT', 'LAST_ACTIVE_AT', '_LOADED_AT']:
+                            # Format timestamp as string for Snowflake
+                            if pd.isna(value):
+                                value_parts.append('NULL')
+                            else:
+                                # Convert to string format that Snowflake can parse
+                                timestamp_str = pd.to_datetime(value).strftime('%Y-%m-%d %H:%M:%S')
+                                value_parts.append(f"'{timestamp_str}'")
+                        elif col == 'PROFILE_DATA':
+                            # Store the JSON value for later update
+                            profile_data_value = value
+                            value_parts.append('NULL')  # Insert NULL first
+                        elif isinstance(value, str):
+                            # Escape single quotes in strings
+                            escaped_value = value.replace("'", "''")
+                            value_parts.append(f"'{escaped_value}'")
+                        else:
+                            value_parts.append(str(value))
+                    
+                    # Insert the row with NULL for PROFILE_DATA
+                    insert_sql = f"INSERT INTO {schema}.{table_name} ({', '.join(columns)}) VALUES ({', '.join(value_parts)})"
+                    cursor.execute(insert_sql)
+                    
+                    # Update PROFILE_DATA separately if it has a value
+                    if profile_data_value is not None:
+                        import json
+                        if isinstance(profile_data_value, str):
+                            try:
+                                parsed_json = json.loads(profile_data_value)
+                                json_str = json.dumps(parsed_json)
+                            except:
+                                json_str = json.dumps(profile_data_value)
+                        else:
+                            json_str = json.dumps(profile_data_value)
+                        
+                        # Use parameterized query for the JSON update
+                        member_id = row['MEMBER_ID']
+                        update_sql = f"UPDATE {schema}.{table_name} SET PROFILE_DATA = PARSE_JSON(%s) WHERE MEMBER_ID = %s"
+                        cursor.execute(update_sql, (json_str, member_id))
+                
+                logger.info(f"Successfully inserted {len(df)} rows into {schema}.{table_name}")
+                return True
+                
+        except Exception as e:
+            logger.error(f"Error in manual INSERT for {table_name}: {e}")
             return False
     
     def get_table_info(self, table_name: str, schema: Optional[str] = None) -> pd.DataFrame:

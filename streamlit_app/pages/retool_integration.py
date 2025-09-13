@@ -117,23 +117,21 @@ def show_api_integration():
     with col1:
         st.markdown("### 📤 Send Data to Retool")
         
-        # Sample data to send
-        sample_data = {
-            "timestamp": datetime.now().isoformat(),
-            "revenue": 245000,
-            "deals_closed": 12,
-            "pipeline_value": 1800000
-        }
+        # Real data integration - no sample data
+        st.info("📊 **Real Data Integration**: This section integrates with live data from your Snowflake database.")
+        st.warning("⚠️ **Note**: Sample data generation has been disabled. Only real data from Disco API and Snowflake is used.")
         
-        st.json(sample_data)
-        
-        if st.button("📤 Send to Retool API", key="send_data"):
-            with st.spinner("Sending data..."):
-                result = send_data_to_retool(sample_data)
-                if result['success']:
-                    st.success(f"✅ Data sent successfully! Response: {result['response']}")
-                else:
-                    st.error(f"❌ Failed to send data: {result['error']}")
+        if st.button("📤 Send Real Data", key="send_data"):
+            # Real webhook integration - no sample data
+            webhook_payload = {
+                'event': 'real_data_sync',
+                'data': {
+                    "message": "Sample data generation disabled",
+                    "timestamp": datetime.now().isoformat(),
+                    "status": "real_data_only"
+                }
+            }
+            st.error("❌ Sample data sending disabled. Configure real data integration instead.")
     
     with col2:
         st.markdown("### 📥 Fetch Data from Retool")
@@ -403,15 +401,10 @@ def fetch_data_from_retool(endpoint):
     import time
     time.sleep(0.5)
     
-    sample_data = {
-        'timestamp': datetime.now().isoformat(),
-        'records': 150,
-        'status': 'success'
-    }
-    
+    # No sample data - real integration only
     return {
-        'success': True,
-        'data': sample_data
+        'success': False,
+        'error': 'Sample data generation disabled - use real data integration'
     }
 
 def submit_form_to_retool(form_data):

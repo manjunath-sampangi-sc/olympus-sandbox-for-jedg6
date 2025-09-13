@@ -73,7 +73,7 @@ def show_connection_settings():
         **Current Configuration:**
         - Account: Configured via secrets
         - Authentication: External Browser
-        - Database: SNOWFLAKE_SAMPLE_DATA
+        - Database: OLYMPUS_ANALYTICS
         - Schema: PUBLIC
         
         **To update connection settings:**
@@ -88,7 +88,7 @@ def show_connection_settings():
         account = "your-account.snowflakecomputing.com"
         user = "your-username"
         authenticator = "externalbrowser"
-        database = "SNOWFLAKE_SAMPLE_DATA"
+        database = "OLYMPUS_ANALYTICS"
         schema = "PUBLIC"
         """, language="toml")
     

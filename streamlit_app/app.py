@@ -9,7 +9,7 @@ import os
 from typing import Dict, Any
 
 # Import page modules
-from pages import dashboard, sales_performance, learning_analytics, ai_chat, retool_integration, settings, billing_dashboard
+from pages import dashboard, sales_performance, learning_analytics, ai_chat, retool_integration, settings, billing_dashboard, data_sync, members_dashboard
 
 # Page configuration
 st.set_page_config(
@@ -19,29 +19,129 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for styling
+# Custom CSS for styling with D2D Experts brand colors
 st.markdown("""
 <style>
     .main-header {
         font-size: 2.5rem;
         font-weight: bold;
-        color: #1f4e79;
+        color: #4682B4;
         text-align: center;
         margin-bottom: 2rem;
     }
     .metric-card {
-        background-color: #f8f9fa;
+        background-color: #fefefe;
         padding: 1rem;
         border-radius: 0.5rem;
-        border-left: 4px solid #1f4e79;
+        border-left: 4px solid #4682B4;
         margin: 0.5rem 0;
+        box-shadow: 0 2px 4px rgba(70, 130, 180, 0.1);
     }
     .sidebar-logo {
         text-align: center;
         font-size: 1.5rem;
         font-weight: bold;
-        color: #1f4e79;
+        color: #4682B4;
         margin-bottom: 2rem;
+    }
+    .logo-container {
+        text-align: center;
+        margin: 1rem auto;
+        padding: 0.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .logo-container img {
+        max-width: 150px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+    .logo-container svg {
+        max-width: 200px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+    /* Sidebar logo specific styling */
+    .stSidebar .logo-container {
+        margin: 1rem auto 1.5rem auto;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .stSidebar .logo-container img,
+    .stSidebar .logo-container svg {
+        max-width: 100px;
+        border-radius: 10px;
+        background: transparent;
+    }
+    .css-1d391kg .logo-container {
+        margin: 1rem auto 1.5rem auto;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .css-1d391kg .logo-container img,
+    .css-1d391kg .logo-container svg {
+        max-width: 100px;
+        border-radius: 10px;
+        background: transparent;
+    }
+    .client-branding {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #cccccc;
+        margin-bottom: 1rem;
+        font-style: italic;
+    }
+    /* Streamlit component styling */
+    .stSelectbox > div > div {
+        border-color: #4682B4;
+    }
+    .stButton > button {
+        background-color: #87CEEB;
+        color: #ffffff;
+        border: none;
+        border-radius: 0.5rem;
+    }
+    .stButton > button:hover {
+        background-color: #4682B4;
+        color: #ffffff;
+    }
+    /* Sidebar styling */
+    .css-1d391kg {
+        background-color: #f8f9fa;
+    }
+    .stSidebar {
+        background-color: #f8f9fa;
+    }
+    .stSidebar > div {
+        background-color: #f8f9fa;
+    }
+    /* Main content area */
+    .main .block-container {
+        background-color: #fefefe;
+    }
+    /* Sidebar navigation buttons */
+    .stSidebar .stButton > button {
+        background-color: #87CEEB;
+        color: #ffffff;
+        border: none;
+        border-radius: 0.5rem;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    .stSidebar .stButton > button:hover {
+        background-color: #4682B4;
+        color: #ffffff;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -103,12 +203,31 @@ def initialize_session_state():
     if 'snowflake_conn' not in st.session_state:
         st.session_state.snowflake_conn = None
     if 'current_page' not in st.session_state:
-        st.session_state.current_page = "Dashboard"
+        st.session_state.current_page = "dashboard"
 
 def authenticate_user():
     """Simple authentication for demo purposes"""
-    st.markdown('<div class="main-header">🏔️ Olympus Analytics</div>', unsafe_allow_html=True)
-    st.markdown("### Welcome to the Olympus Analytics Demo")
+    # Display client logo
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+        try:
+            st.image('/Users/manjunaths/upwork/streamlit_app/assets/logo.svg', width=200)
+        except FileNotFoundError:
+            try:
+                st.image('/Users/manjunaths/upwork/streamlit_app/assets/d2d_experts_logo_transparent.svg', width=200)
+            except FileNotFoundError:
+                try:
+                    st.image('/Users/manjunaths/upwork/streamlit_app/assets/image.png', width=200)
+                except FileNotFoundError:
+                    try:
+                        st.image('/Users/manjunaths/upwork/streamlit_app/assets/image copy.png', width=200)
+                    except FileNotFoundError:
+                        st.markdown('<div class="main-header">🏔️ Olympus Analytics</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown('<div class="client-branding">Powered by Olympus Analytics</div>', unsafe_allow_html=True)
+    st.markdown("### Welcome to the Analytics Demo")
     
     with st.form("login_form"):
         st.markdown("**Demo Credentials:**")
@@ -126,7 +245,23 @@ def authenticate_user():
 def create_sidebar():
     """Create navigation sidebar"""
     with st.sidebar:
-        st.markdown('<div class="sidebar-logo">🏔️ Olympus Analytics</div>', unsafe_allow_html=True)
+        # Display client logo in sidebar
+        st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+        try:
+            st.image('/Users/manjunaths/upwork/streamlit_app/assets/logo.svg', width=120)
+        except FileNotFoundError:
+            try:
+                st.image('/Users/manjunaths/upwork/streamlit_app/assets/d2d_experts_logo_transparent.svg', width=120)
+            except FileNotFoundError:
+                try:
+                    st.image('/Users/manjunaths/upwork/streamlit_app/assets/image.png', width=120)
+                except FileNotFoundError:
+                    try:
+                        st.image('/Users/manjunaths/upwork/streamlit_app/assets/image copy.png', width=120)
+                    except FileNotFoundError:
+                        st.markdown('<div class="sidebar-logo">🏔️ Olympus Analytics</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="client-branding">Analytics Dashboard</div>', unsafe_allow_html=True)
         
         # Navigation menu
         pages = {
@@ -134,6 +269,8 @@ def create_sidebar():
             "💼 Sales Performance": "sales",
             "🎓 Learning Analytics": "learning",
             "💰 Billing Dashboard": "billing",
+            "👥 Members Dashboard": "members",
+            "🔄 Data Sync": "data_sync",
             "🤖 AI Chat Assistant": "ai_chat",
             "🔧 Retool Integration": "retool",
             "⚙️ Settings": "settings"
@@ -182,6 +319,10 @@ def main():
         show_learning_analytics()
     elif current_page == 'billing':
         show_billing_dashboard()
+    elif current_page == 'members':
+        show_members_dashboard()
+    elif current_page == 'data_sync':
+        show_data_sync()
     elif current_page == 'ai_chat':
         show_ai_chat()
     elif current_page == 'retool':
@@ -214,6 +355,14 @@ def show_retool_integration():
 def show_billing_dashboard():
     """Display billing dashboard"""
     billing_dashboard.show_billing_dashboard()
+
+def show_members_dashboard():
+    """Display members dashboard"""
+    members_dashboard.show_members_dashboard()
+
+def show_data_sync():
+    """Display data sync dashboard"""
+    data_sync.show_data_sync()
 
 def show_settings():
     """Display settings page"""

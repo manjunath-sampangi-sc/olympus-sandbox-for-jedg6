@@ -9,7 +9,11 @@ from utils.snowflake_connector import get_snowflake_connector, execute_query
 
 def show_executive_dashboard():
     """Display comprehensive executive dashboard with real-time data"""
-    st.markdown('<div class="main-header">📊 Executive Dashboard</div>', unsafe_allow_html=True)
+    # Header with client branding
+    col1, col2, col3 = st.columns([1, 3, 1])
+    with col2:
+        st.markdown('<div class="main-header">📊 Executive Dashboard</div>', unsafe_allow_html=True)
+        st.markdown('<div class="client-branding">D2D Experts Analytics Portal</div>', unsafe_allow_html=True)
     
     # Connection status check
     connector = get_snowflake_connector()

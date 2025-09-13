@@ -51,7 +51,7 @@ active_enrollments as (
         p.is_home_course,
         -- Generate monthly billing periods
         date_trunc('month', e.enrolled_at) as billing_month
-    from {{ ref('stg_disco_enrollments') }} e
+    from {{ ref('slv_disco_enrollments') }} e
     inner join products p on e.product_id = p.product_id
     where e.is_currently_enrolled = true
        or e.is_completed = true

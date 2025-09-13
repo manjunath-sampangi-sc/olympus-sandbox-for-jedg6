@@ -23,7 +23,7 @@ from pathlib import Path
 streamlit_app_path = Path(__file__).parent / "streamlit_app"
 sys.path.insert(0, str(streamlit_app_path))
 
-from streamlit_app.disco_api_integration import DiscoAPIClient, DiscoBronzeLoader
+from streamlit_app.disco_api_integration import DiscoAPIClient, DiscoGoldLoader
 from streamlit_app.utils.snowflake_connector import SnowflakeConnector
 
 # Configure logging
@@ -62,7 +62,7 @@ class DiscoPipelineRunner:
         # Initialize API client and loader
         try:
             self.api_client = DiscoAPIClient(api_key)
-            self.bronze_loader = DiscoBronzeLoader()
+            self.bronze_loader = DiscoGoldLoader()
             logger.info("Pipeline components initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize pipeline components: {e}")
@@ -87,9 +87,9 @@ class DiscoPipelineRunner:
             
             logger.info(f"Found {len(communities)} communities")
             
-            # Create Bronze tables
-            logger.info("Creating Bronze tables...")
-            self.bronze_loader.create_bronze_tables()
+            # Create Gold tables
+            logger.info("Creating Gold tables...")
+            self.bronze_loader.create_gold_tables()
             
             # Load data for each community
             total_records = 0
@@ -102,27 +102,27 @@ class DiscoPipelineRunner:
                 
                 try:
                     # Load communities data
-                    communities_df = self.bronze_loader.load_communities_data([community])
+                    communities_df = self.bronze_loader.load_communities([community])
                     total_records += len(communities_df)
                     
                     # Load members data
                     members = self.api_client.get_members(community_id)
                     if members:
-                        members_df = self.bronze_loader.load_members_data(members)
+                        members_df = self.bronze_loader.load_members(members)
                         total_records += len(members_df)
                         logger.info(f"Loaded {len(members)} members for {community_name}")
                     
                     # Load products data
                     products = self.api_client.get_products(community_id)
                     if products:
-                        products_df = self.bronze_loader.load_products_data(products)
+                        products_df = self.bronze_loader.load_products(products)
                         total_records += len(products_df)
                         logger.info(f"Loaded {len(products)} products for {community_name}")
                     
                     # Load enrollments data
                     enrollments = self.api_client.get_enrollments(community_id)
                     if enrollments:
-                        enrollments_df = self.bronze_loader.load_enrollments_data(enrollments)
+                        enrollments_df = self.bronze_loader.load_enrollments(enrollments)
                         total_records += len(enrollments_df)
                         logger.info(f"Loaded {len(enrollments)} enrollments for {community_name}")
                     

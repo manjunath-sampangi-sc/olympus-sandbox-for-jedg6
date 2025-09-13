@@ -31,6 +31,7 @@ python-dateutil==2.8.2
 streamlit-option-menu==0.3.6
 streamlit-aggrid==0.3.4.post3
 streamlit-elements==0.1.0
+schedule==1.2.0
 
 # For Retool integration
 flask==3.0.0

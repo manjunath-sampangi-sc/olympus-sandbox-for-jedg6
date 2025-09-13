@@ -54,8 +54,8 @@ models:
         tests:
           - not_null
 
-  - name: stg_disco_enrollments
-    description: "Staged Disco LMS enrollments with basic cleaning and validation"
+  - name: brz_disco_enrollments
+    description: "Bronze layer Disco LMS enrollments with basic cleaning and validation"
     columns:
       - name: enrollment_id
         description: "Unique identifier for the enrollment"
@@ -99,6 +99,27 @@ models:
           - not_null
           - accepted_values:
               values: ['Won', 'Lost', 'Open']
+
+  - name: slv_disco_enrollments
+    description: "Silver layer Disco LMS enrollments with enhanced transformations"
+    columns:
+      - name: enrollment_id
+        description: "Unique identifier for the enrollment"
+        tests:
+          - not_null
+          - unique
+      - name: member_id
+        description: "Member identifier"
+        tests:
+          - not_null
+      - name: product_id
+        description: "Product identifier"
+        tests:
+          - not_null
+      - name: is_currently_enrolled
+        description: "Boolean flag indicating current enrollment status"
+        tests:
+          - not_null
 
   - name: int_learning_analytics
     description: "Enriched learning data with course and user information"

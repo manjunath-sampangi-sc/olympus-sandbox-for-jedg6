@@ -159,6 +159,87 @@ cython_debug/
 # PyCharm configuration files.
 .idea/
 
+# Project specific - Temporary and test files
+check_*.py
+test_*.py
+debug_*.py
+create_*.py
+fix_*.py
+investigate_*.py
+verify_*.py
+load_*.py
+generate_*.py
+rebuild_*.py
+update_*.py
+clean_*.py
+complete_data_setup.py
+create_detailed_export.py
+create_client_export.py
+create_member_enrollment_table.py
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# DBT logs and target
+dbt_olympus_analytics/logs/
+dbt_olympus_analytics/target/
+
+# Exports and temporary data
+client_exports/
+
+# Secrets and configuration
+.env.local
+.env.production
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Snowflake connection cache
+.snowflake/
+
+# API keys and tokens
+api_key*
+token*
+*.crt
+
+# Temporary SQL files
+*.tmp.sql
+*.temp.sql
+
+# Data files
+*.parquet
+*.json.gz
+*.pickle
+*.pkl
+
+# Large binary files
+*.bin
+*.dat
+
+# Temporary directories
+tmp/
+temp/
+
+# Development files
+local_*
+dev_*
+
+# Personal notes
+notes/
+drafts/
+todo.txt
+TODO.md
+
+# Exclude specific files but keep templates
+!streamlit_app/.streamlit/secrets.toml.template
+!streamlit_app/assets/*.png
+!streamlit_app/assets/*.svg
+!requirements.txt
+!dbt_project.yml
+
 # Streamlit secrets and config
 .streamlit/secrets.toml
 .streamlit/config.toml

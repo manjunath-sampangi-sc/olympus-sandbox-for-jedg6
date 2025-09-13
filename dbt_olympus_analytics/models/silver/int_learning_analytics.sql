@@ -24,7 +24,7 @@ with enrollments as (
         cohort_id,
         created_at,
         updated_at
-    from {{ ref('stg_disco_enrollments') }}
+    from {{ ref('slv_disco_enrollments') }}
 ),
 
 courses as (
