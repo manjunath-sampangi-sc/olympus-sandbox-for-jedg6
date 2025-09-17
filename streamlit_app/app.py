@@ -207,26 +207,14 @@ def initialize_session_state():
 
 def authenticate_user():
     """Simple authentication for demo purposes"""
-    # Display client logo
+    # Display Olympus Analytics branding
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-        try:
-            st.image('/Users/manjunaths/upwork/streamlit_app/assets/logo.svg', width=200)
-        except FileNotFoundError:
-            try:
-                st.image('/Users/manjunaths/upwork/streamlit_app/assets/d2d_experts_logo_transparent.svg', width=200)
-            except FileNotFoundError:
-                try:
-                    st.image('/Users/manjunaths/upwork/streamlit_app/assets/image.png', width=200)
-                except FileNotFoundError:
-                    try:
-                        st.image('/Users/manjunaths/upwork/streamlit_app/assets/image copy.png', width=200)
-                    except FileNotFoundError:
-                        st.markdown('<div class="main-header">🏔️ Olympus Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="main-header">🏔️ Olympus Analytics</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="client-branding">Powered by Olympus Analytics</div>', unsafe_allow_html=True)
+    st.markdown('<div class="client-branding">Analytics Platform MVP</div>', unsafe_allow_html=True)
     st.markdown("### Welcome to the Analytics Demo")
     
     with st.form("login_form"):
@@ -245,23 +233,11 @@ def authenticate_user():
 def create_sidebar():
     """Create navigation sidebar"""
     with st.sidebar:
-        # Display client logo in sidebar
+        # Display Olympus Analytics branding in sidebar
         st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-        try:
-            st.image('/Users/manjunaths/upwork/streamlit_app/assets/logo.svg', width=120)
-        except FileNotFoundError:
-            try:
-                st.image('/Users/manjunaths/upwork/streamlit_app/assets/d2d_experts_logo_transparent.svg', width=120)
-            except FileNotFoundError:
-                try:
-                    st.image('/Users/manjunaths/upwork/streamlit_app/assets/image.png', width=120)
-                except FileNotFoundError:
-                    try:
-                        st.image('/Users/manjunaths/upwork/streamlit_app/assets/image copy.png', width=120)
-                    except FileNotFoundError:
-                        st.markdown('<div class="sidebar-logo">🏔️ Olympus Analytics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-logo">🏔️ Olympus Analytics</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
-        st.markdown('<div class="client-branding">Analytics Dashboard</div>', unsafe_allow_html=True)
+        st.markdown('<div class="client-branding">Analytics Platform</div>', unsafe_allow_html=True)
         
         # Navigation menu
         pages = {
